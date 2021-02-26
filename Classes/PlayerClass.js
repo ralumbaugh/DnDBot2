@@ -1,3 +1,5 @@
+const Discord = require('discord.js');
+
 module.exports = class Player {
     constructor(Name, HP, AC, Dex){
         this.Name = Name;
@@ -58,7 +60,6 @@ module.exports = class Player {
         }
     }
     
-    // BeAttacked(toHit) {
     BeAttacked(toHit) {
         if(isNaN(toHit)){
             return `Please input a number for your to hit bonus.`
@@ -83,5 +84,48 @@ module.exports = class Player {
 
     Attack(target, toHit) {
         return target.BeAttacked(toHit);
+    }
+
+    Die() {
+        //Add remove from initiative command here.
+        this.Conditions['Unconscious'] = true;
+        this.IsAlive = false;
+    }
+
+    TakeDamage(message, amount) {
+        if(Number(this.HP) > 0){
+            message.channel.send(`${this.Name} takes ${amount} damage.`);
+            this.HP -= amount;
+            if(Number(this.HP) > 0){
+                message.channel.send(`${this.Name} has ${this.HP} HP left!`);
+                return;
+            }
+            else if(Number(this.HP) > (0-Number(this.MaxHP))){
+                this.HP = 0;
+                this.Conditions["Unconscious"] = true;
+                message.channel.send(`${this.Name} has fallen unconscious!`);
+                return;
+            }
+            this.Die();
+            message.channel.send(`That much damage kills ${this.Name} outright.`);
+            return;
+        }
+        else if(this.IsAlive){
+            if(Number(amount) >= Number(this.MaxHP)){
+                this.Die();
+                message.channel.send(`${this.Name} takes the hit. ${this.Name} has died`);
+                return;
+            }
+            message.channel.send(`${this.Name}'s unconscious body takes the hit.`);
+        }
+    }
+
+    DisplayCard() {
+        const CharacterCard = new Discord.MessageEmbed();
+        CharacterCard.setColor('#0099ff');
+        CharacterCard.setTitle(this.Name);
+        CharacterCard.addField('HP', `${this.HP}/${this.MaxHP}`);
+        CharacterCard.addField('AC', this.AC);
+        return CharacterCard;
     }
 }
