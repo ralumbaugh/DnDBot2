@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.characters = [];
+client.initiativePosition = 0;
 client.initiative = [];
 const commandFiles = fs.readdirSync('./BotCommands').filter(file => file.endsWith('.js'));
 

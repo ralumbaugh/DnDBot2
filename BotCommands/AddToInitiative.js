@@ -13,11 +13,12 @@ module.exports = {
                     message.channel.send(`${CharacterToAdd.Name} is already in initiative!`);
                 }
                 else{
-                    client.initiative.push([CharacterToAdd,args[1]]);
+                    CharacterToAdd.Initiative = args[1];
+                    client.initiative.push(CharacterToAdd);
                     message.channel.send(`Added ${CharacterToAdd.Name} to initiative!`);
                     // Sorts character into initiative order
                     for(let i=client.initiative.length-1; i>0; i--){
-                        if(Number(client.initiative[i][1]) > Number(client.initiative[i-1][1])){
+                        if(Number(client.initiative[i].Initiative) > Number(client.initiative[i-1].Initiative)){
                             [client.initiative[i],client.initiative[i-1]] = [client.initiative[i-1],client.initiative[i]];
                         }
                     }

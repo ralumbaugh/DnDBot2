@@ -1,4 +1,5 @@
 const FindPlayer = require('../HelperCommands/CheckRoster');
+const Remove = require('../BotCommands/RemoveFromInitiative');
 
 module.exports = {
     name: 'damage',
@@ -11,6 +12,9 @@ module.exports = {
                 return;
             }
             DamageTarget.TakeDamage(message, args[1]);
+            if(DamageTarget.IsAlive == false){
+                Remove.execute(client, message, [DamageTarget.Name]);
+            }
             return;
         }
         message.channel.send('Argument should be in the following format: <Character to Damage> <Amount of Damage>');

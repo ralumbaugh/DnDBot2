@@ -7,8 +7,9 @@ module.exports = class Player {
         this.MaxHP = HP;
         this.AC = AC;
         this.Dex = Dex;
+        this.Initiative = false;
         this.IsAlive = true;
-        this.DeathSaves = 0;
+        this.DeathSaves = {'Success':0, 'Failure':0};
         this.Conditions = {
             "Blinded" : 0,
             "Charmed" : 0,
@@ -122,10 +123,19 @@ module.exports = class Player {
 
     DisplayCard() {
         const CharacterCard = new Discord.MessageEmbed();
-        CharacterCard.setColor('#0099ff');
         CharacterCard.setTitle(this.Name);
-        CharacterCard.addField('HP', `${this.HP}/${this.MaxHP}`);
-        CharacterCard.addField('AC', this.AC);
+        if(this.Initiative != false){
+            CharacterCard.addField('Initiative', this.Initiative);
+        }
+        if(this.Conditions['Unconscious'] == true){
+            CharacterCard.setColor('#ff0000');
+            CharacterCard.addField('Death Saves', `Success: ${this.DeathSaves.Success} | Failure: ${this.DeathSaves.Failure}`);
+        }
+        else{
+            CharacterCard.setColor('#0099ff');
+            CharacterCard.addField('HP', `${this.HP}/${this.MaxHP}`);
+            CharacterCard.addField('AC', this.AC);
+        }
         return CharacterCard;
     }
 }
