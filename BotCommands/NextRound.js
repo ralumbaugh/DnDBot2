@@ -4,7 +4,11 @@ module.exports = (client) = {
     name: 'next',
     description: 'Moves to the next character in initiative.',
     execute(client, message){
-        client.initiative[client.initiativePosition].UpdateConditions();
+        try {
+            client.initiative[Number(client.initiativePosition)].UpdateConditions();
+        } catch (error) {
+            client.initiative[Number(client.initiativePosition-1)].UpdateConditions();
+        }
         if(client.initiativePosition < client.initiative.length-1){
             client.initiativePosition++;
         }

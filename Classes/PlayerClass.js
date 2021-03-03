@@ -25,7 +25,6 @@ module.exports = class Player {
             "Poisoned" : 0,
             "Prone" : 0,
             "Restrained" : 0,
-            "Stable" : true,
             "Stunned" : 0,
         }
         this.DodgeMessage = [
@@ -141,21 +140,26 @@ module.exports = class Player {
             CharacterCard.setColor('#ff0000');
             let DeathSaveSuccessMessage = '';
             let DeathSaveFailureMessage = '';
-            for(let i=0; i< 3; i++){
-                if(this.DeathSaves.Success <= i){
-                    DeathSaveSuccessMessage += ' [ ] ';
-                }
-                else{
-                    DeathSaveSuccessMessage += ' [X] ';
-                }
-                if(this.DeathSaves.Failure <= i){
-                    DeathSaveFailureMessage += ' [ ] ';
-                }
-                else{
-                    DeathSaveFailureMessage += ' [X] ';
-                }
+            if(this.Stable === true){
+                CharacterCard.addField('Stable', `${this.Name} is currently unconscious, but stable.`);
             }
-            CharacterCard.addField('Death Saves', `Successes: ${DeathSaveSuccessMessage} \n Failures: ${DeathSaveFailureMessage}`);
+            else{
+                for(let i=0; i< 3; i++){
+                    if(this.DeathSaves.Success <= i){
+                        DeathSaveSuccessMessage += ' [ ] ';
+                    }
+                    else{
+                        DeathSaveSuccessMessage += ' [X] ';
+                    }
+                    if(this.DeathSaves.Failure <= i){
+                        DeathSaveFailureMessage += ' [ ] ';
+                    }
+                    else{
+                        DeathSaveFailureMessage += ' [X] ';
+                    }
+                }
+                CharacterCard.addField('Death Saves', `Successes: ${DeathSaveSuccessMessage} \n Failures: ${DeathSaveFailureMessage}`);
+            }
         }
         else{
             CharacterCard.setColor('#0099ff');
