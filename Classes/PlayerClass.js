@@ -10,6 +10,7 @@ module.exports = class Player {
         this.Initiative = false;
         this.IsAlive = true;
         this.DeathSaves = {'Success':0, 'Failure':0};
+        this.Stable = true;
         this.Conditions = {
             "Blinded" : 0,
             "Charmed" : 0,
@@ -24,8 +25,8 @@ module.exports = class Player {
             "Poisoned" : 0,
             "Prone" : 0,
             "Restrained" : 0,
+            "Stable" : true,
             "Stunned" : 0,
-            "Unconscious" : 0,
         }
         this.DodgeMessage = [
           `${this.Name} dodges out of the way just in the nick of time!`,
@@ -88,7 +89,6 @@ module.exports = class Player {
     }
 
     Die() {
-        //Add remove from initiative command here.
         this.Conditions['Unconscious'] = true;
         this.IsAlive = false;
     }
@@ -103,7 +103,8 @@ module.exports = class Player {
             }
             else if(Number(this.HP) > (0-Number(this.MaxHP))){
                 this.HP = 0;
-                this.Conditions["Unconscious"] = true;
+                this.Conditions['Unconscious'] = true;
+                this.Stable = false;
                 message.channel.send(`${this.Name} has fallen unconscious!`);
                 return;
             }
@@ -117,7 +118,16 @@ module.exports = class Player {
                 message.channel.send(`${this.Name} takes the hit. ${this.Name} has died`);
                 return;
             }
+            this.Stable = false;
             message.channel.send(`${this.Name}'s unconscious body takes the hit.`);
+        }
+    }
+
+    UpdateConditions() {
+        for(let [key, value] of Object.entries(this.Conditions)){
+            if(value != 0 && value !== true){
+                this.Conditions[key] = value-=1;
+            }
         }
     }
 
@@ -129,12 +139,50 @@ module.exports = class Player {
         }
         if(this.Conditions['Unconscious'] == true){
             CharacterCard.setColor('#ff0000');
-            CharacterCard.addField('Death Saves', `Success: ${this.DeathSaves.Success} | Failure: ${this.DeathSaves.Failure}`);
+            let DeathSaveSuccessMessage = '';
+            let DeathSaveFailureMessage = '';
+            for(let i=0; i< 3; i++){
+                if(this.DeathSaves.Success <= i){
+                    DeathSaveSuccessMessage += ' [ ] ';
+                }
+                else{
+                    DeathSaveSuccessMessage += ' [X] ';
+                }
+                if(this.DeathSaves.Failure <= i){
+                    DeathSaveFailureMessage += ' [ ] ';
+                }
+                else{
+                    DeathSaveFailureMessage += ' [X] ';
+                }
+            }
+            CharacterCard.addField('Death Saves', `Successes: ${DeathSaveSuccessMessage} \n Failures: ${DeathSaveFailureMessage}`);
         }
         else{
             CharacterCard.setColor('#0099ff');
             CharacterCard.addField('HP', `${this.HP}/${this.MaxHP}`);
             CharacterCard.addField('AC', this.AC);
+            let ConditionsToDisplay = '';
+            for(let [key, value] of Object.entries(this.Conditions)){
+                if(value != 0 && ConditionsToDisplay.length == 0){
+                    if(value === true){
+                        ConditionsToDisplay = `${key}: Until Treated`;
+                    }
+                    else{
+                        ConditionsToDisplay = `${key}: ${value} turns`;
+                    }
+                }
+                else if(value!=0){
+                    if(value === true){
+                        ConditionsToDisplay += `, ${key}: Until Treated`;
+                    }
+                    else{
+                        ConditionsToDisplay += `, ${key}: ${value} turns`;
+                    }
+                }
+            }
+            if(ConditionsToDisplay.length != 0){
+                CharacterCard.addField('Conditions', ConditionsToDisplay);
+            }
         }
         return CharacterCard;
     }

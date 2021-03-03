@@ -1,6 +1,7 @@
 // Loadup is a command designed to make designing commands quicker to test.
 const AddPlayer = require('./AddPlayer');
 const AddInitiative = require('./AddToInitiative');
+const AddCondition = require('./AddCondition');
 
 module.exports = {
     name: 'loadup',
@@ -10,6 +11,7 @@ module.exports = {
         AddPlayer.execute(client, message, ['Bob', '25', '15', '2']);
         AddInitiative.execute(client, message, ['Quest', '20']);
         AddInitiative.execute(client, message, ['Bob', '25']);
-        message.channel.send('Quest and Bob have been created and added to initiative.');
+        AddCondition.execute(client, message, ['Bob', 'Blinded', 3]);
+        AddCondition.execute(client, message, ['Bob', 'Deafened']);
     }
 }
